@@ -26,3 +26,30 @@ csv_data <- readr::read_csv(file = url,
                             show_col_types = FALSE,
                             progress = TRUE)
 ```
+
+## Data Tidying
+
+### Pivoting Longer
+
+An initial step in data tidying is pivoting the data frame longer because important data are contained in column names (R 4 Data Science, Section 5.3.1). By converting each destination city's column into frequency data and making a new column for destination city names, the data is prepared for further analysis.
+
+```{r data-tidying}
+df_long <- csv_data |>
+  pivot_longer(
+    cols = c(3,4,5,6,7),
+    names_to = "destination",
+    values_to = "frequency"
+  )
+head(df_long)
+```
+
+### Summarizing Data
+
+```{r data-summary}
+
+df_sum <- df_long |>
+  group_by(destination)|>
+  
+  
+  
+```
