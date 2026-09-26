@@ -47,9 +47,21 @@ head(df_long)
 
 ```{r data-summary}
 
-df_sum <- df_long |>
-  group_by(destination)|>
+df_long <- df_long |>
+  group_by(status) |>
+  arrange(destination)
+
   
+df_wide <- df_long |>
+  pivot_wider(
+    names_from = status,
+    values_from = frequency
+  )
+
+df_wide <- janitor::clean_names(df_wide)
   
-  
+df_wide <- df_wide |>
+  mutate(on_time_prop = on_time/(on_time+delayed))
+
+knitr::kable(df_wide, caption = "Summary of Data")
 ```
