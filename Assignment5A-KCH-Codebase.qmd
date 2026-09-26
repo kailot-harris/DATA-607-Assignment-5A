@@ -1,0 +1,22 @@
+---
+title: "DATA 607 - Assignment 5A - Approach"
+author: "Kailot C. Harris"
+date: "2026/09/25"
+format: html
+editor: visual
+theme:
+  dark: darkly
+  light: flatly
+---
+
+# Introduction and Overview
+
+Data is provided in the form of a formatted table with frequencies of on-time and delayed arrivals. An initial goal of this work is to accurately store this information in a .CSV file. Next, the .CSV file will be read into R using the `readr` package's `read_csv()` function. The `tidyr` and `dplyr` packages will be utilized to tidy and transform data. Arrival delay information will be compared across airlines and visualized.
+
+# Codebase
+
+```{r}
+library(tidyverse)
+url <- "https://github.com/kailot-harris/DATA-607-Assignment5A/numbersense.csv"
+readr::read_csv(url)
+```

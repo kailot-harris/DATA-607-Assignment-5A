@@ -1,0 +1,19 @@
+Week 5 Assignment Grading Rubric
+
+Submitted data file with at least some count analysis (+45)
+
+Recreated File in Same Format as given, including missing data where there were empty cells in source data. (+5)
+
+Placed file in Internet-accessible location, such as a publicly-accessible GitHub repo.  Also OK (if less scaleable) to generated and populated dataframe from code. (+5)
+
+Provided code to populate missing data. (+5)
+
+Transformed data from wide to long format. (+10)
+
+Compared percentage (not just counts) of either delays or arrival rates for two airlines overall. [Either with a chart, or a table; both would be exemplary].  Include text summarizes findings from this comparison. (+10)
+
+Compared percentage (not just counts) of either delays or arrival rates for two airlines across five cities. [Either with a chart, or a table; both would be exemplary].  Include text summarizes findings from this comparison. (+10)
+
+Describe discrepancy between comparing two airlines’ flight performances city-by-city and overall. (+5)
+
+Explain discrepancy between comparing two airlines’ flight performances city-by-city and overall.(+5)
