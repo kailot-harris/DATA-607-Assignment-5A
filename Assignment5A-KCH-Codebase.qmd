@@ -1,5 +1,5 @@
 ---
-title: "DATA 607 - Assignment 5A - Approach"
+title: "DATA 607 - Assignment 5A - Codebase"
 author: "Kailot C. Harris"
 date: "2026/09/25"
 format:
@@ -63,7 +63,6 @@ To prepare the data for summarizing, the data frame was pivoted wider. This repl
 #| message: false
 
 df_long <- df_long |>
-  group_by(status) |>
   arrange(destination)
 
 df_wide <- df_long |>
@@ -90,8 +89,6 @@ knitr::kable(df_wider, caption = "Summary of Data")
 ```
 
 ## Visualizing Data
-
-A column plot compares the `on_time_pct` values for each
 
 ```{r viz-1}
 #| echo: true
