@@ -81,6 +81,12 @@ knitr::kable(df_wider, caption = "Summary of Data")
 A column plot compares the `on_time_pct` values for each
 
 ```{r viz-1}
+#| echo: true
+#| warning: false
+#| message: false
+#| label: fig-1
+#| fig-cap: "Comparing Arrival Delays Across Airline and Destination"
+
 df_summary |>
   ggplot(aes(x=destination, y=on_time_pct, fill=destination)) +
   facet_wrap(~airline) +
@@ -104,7 +110,11 @@ df_summary |>
 ```
 
 ```{r viz-2}
-#Goal: visualize a comparison for Am West and Alaska
+#| echo: true
+#| warning: false
+#| message: false
+#| label: fig-2
+#| fig-cap: "Alaska Airlines Displays a Higher On-Time Percentage than Am West"
 
 df_viz <- df_wider |>
   mutate(diff = alaska - am_west) |>
@@ -113,7 +123,7 @@ df_viz <- df_wider |>
 df_viz |>
   ggplot(aes(x=destination, y=diff, fill=destination)) +
   geom_col(show.legend = FALSE) +
-  labs(title = "Alaska Airlines Has a Higher On-Time Percentage than Am West",
+  labs(title = "Alaska Airlines Displays a Higher On-Time Percentage than Am West",
        subtitle = "",
        x = "Destination",
        y = "Differential in Percent On-Time\n (Alaska minus Am West)"
@@ -131,3 +141,9 @@ df_viz |>
   ) +
   scale_fill_discrete()
 ```
+
+# Findings and Recommendations
+
+In this assignment a .CSV file was loaded into a data frame using `read_csv()` and the data frame was tidied and reorganized in several iterations. The frame was transformed wider and longer from its initial shape. In the end, the data is described in two visualizations comparing on-time rates (percentage) for five destinations across two airlines and the difference in on-time rates for the two airlines.
+
+According to @fig-1,
