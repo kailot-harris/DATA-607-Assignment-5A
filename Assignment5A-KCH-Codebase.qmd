@@ -146,4 +146,8 @@ df_viz |>
 
 In this assignment a .CSV file was loaded into a data frame using `read_csv()` and the data frame was tidied and reorganized in several iterations. The frame was transformed wider and longer from its initial shape. In the end, the data is described in two visualizations comparing on-time rates (percentage) for five destinations across two airlines and the difference in on-time rates for the two airlines.
 
-According to @fig-1,
+According to @fig-1, each airline shows on-time rates exceeding 70%, with all of the Alaska airline data exceeding 80%. Flights to Phoenix represented the highest on-time rates for both airlines, while San Francisco represented the destination with the lowest on-time rates.
+
+In @fig-2, it is clear that Alaska airline has higher on-time percent rates than Am West airline. Here, the differential for each destination (calculated as Alaska on-time rate minus Am West on-time rate) is shown, which compares the on-time rates for the airlines across all five destinations. This chart makes apparent that the largest differential in on-time rates occurs when San Francisco is the destination.
+
+Overall, this assignment could be extended by incorporating more data into the analysis (more airlines, more destinations, average delay times, etc.). Additionally, if historical data were available, the on-time rates for each airline could be calculated for each year or month of operation. Lastly, this assignment could be completed using a mySQL database for storage and then SQL manipulations could be practiced.
