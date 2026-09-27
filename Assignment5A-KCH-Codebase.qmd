@@ -81,7 +81,6 @@ knitr::kable(df_wider, caption = "Summary of Data")
 A column plot compares the `on_time_pct` values for each
 
 ```{r viz-1}
-library(patchwork)
 df_summary |>
   ggplot(aes(x=destination, y=on_time_pct, fill=destination)) +
   facet_wrap(~airline) +
@@ -105,6 +104,30 @@ df_summary |>
 ```
 
 ```{r viz-2}
+#Goal: visualize a comparison for Am West and Alaska
 
+df_viz <- df_wider |>
+  mutate(diff = alaska - am_west) |>
+  select(destination, diff)
 
+df_viz |>
+  ggplot(aes(x=destination, y=diff, fill=destination)) +
+  geom_col(show.legend = FALSE) +
+  labs(title = "Alaska Airlines Has a Higher On-Time Percentage than Am West",
+       subtitle = "",
+       x = "Destination",
+       y = "Differential in Percent On-Time\n (Alaska minus Am West)"
+       ) +
+  theme_minimal() +
+  theme(
+    plot.title.position = "plot",
+    plot.caption.position = "plot",
+    plot.title = element_text(size = 15, face = "bold"),
+    plot.subtitle = element_text(size = 13, face = "italic"),
+    axis.text.y = element_text(size = 11, face = "bold"),
+    axis.text.x = element_text(size = 11, face = "bold"),
+    axis.title.y = element_text(size = 12, face = "bold"),
+    axis.title.x = element_text(size = 12, face = "bold"),
+  ) +
+  scale_fill_discrete()
 ```
