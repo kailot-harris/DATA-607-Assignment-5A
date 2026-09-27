@@ -2,7 +2,9 @@
 title: "DATA 607 - Assignment 5A - Approach"
 author: "Kailot C. Harris"
 date: "2026/09/25"
-format: html
+format:
+  html:
+    code-overflow: wrap
 editor: visual
 theme:
   dark: darkly
@@ -18,13 +20,17 @@ Data is provided in the form of a formatted table with frequencies of on-time an
 ## Data Import
 
 ```{r read-csv}
+#| echo: true
+#| warning: false
+#| message: false
+
 library(tidyverse)
 
 url <- "https://raw.githubusercontent.com/kailot-harris/DATA-607-Assignment-5A/refs/heads/main/numberverse.csv"
 
 csv_data <- readr::read_csv(file = url, 
                             show_col_types = FALSE,
-                            progress = TRUE)
+                            progress = FALSE)
 ```
 
 ## Data Tidying
@@ -34,6 +40,10 @@ csv_data <- readr::read_csv(file = url,
 An initial step in data tidying is pivoting the data frame longer because important data are contained in column names (R 4 Data Science, Section 5.3.1). By converting each destination city's column into frequency data and making a new column for destination city names, the data is prepared for further analysis.
 
 ```{r data-tidying}
+#| echo: true
+#| warning: false
+#| message: false
+
 df_long <- csv_data |>
   pivot_longer(
     cols = c(3,4,5,6,7),
@@ -48,6 +58,9 @@ head(df_long)
 To prepare the data for summarizing, the data frame was pivoted wider. This replaced the frequency column with two columns per unique combination of `airline` & `destination`: `on_time` and `delayed`. From there a new column, `on_time_pct`, was mutated in to calculate the percent of on-time flights for each unique combination of `airline` & `destination` . The data frame was then pivoted even wider, generating unique columns for `alaska` and `am west` airlines with their respective `on_time_pct` calculations.
 
 ```{r data-summary}
+#| echo: true
+#| warning: false
+#| message: false
 
 df_long <- df_long |>
   group_by(status) |>
