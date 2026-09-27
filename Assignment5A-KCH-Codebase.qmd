@@ -45,6 +45,8 @@ head(df_long)
 
 ### Summarizing Data
 
+To prepare the data for summarizing, the data frame was pivoted wider. This replaced the
+
 ```{r data-summary}
 
 df_long <- df_long |>
@@ -60,8 +62,32 @@ df_wide <- df_long |>
 
 df_wide <- janitor::clean_names(df_wide)
   
-df_wide <- df_wide |>
-  mutate(on_time_prop = on_time/(on_time+delayed))
+df_summary <- df_wide |>
+  mutate(on_time_pct = round(100*on_time/(on_time+delayed),1)) |>
+  select(airline, destination, on_time_pct)
 
-knitr::kable(df_wide, caption = "Summary of Data")
+df_wider <- df_summary |>
+  pivot_wider(names_from = airline,
+              values_from = on_time_pct
+  ) |>
+  janitor::clean_names() |>
+  arrange(desc(alaska))
+
+
+knitr::kable(df_wider, caption = "Summary of Data")
+```
+
+## Visualizing Data
+
+```{r viz-1}
+df_wider |>
+  ggplot(aes(x=destination, y=alaska)) +
+  geom_col() +
+  scale_y_continuous(limits = c(0,100)) +
+  labs(x="Destination",
+       y="Percent On Time") +
+  theme_minimal()
+
+
+
 ```
