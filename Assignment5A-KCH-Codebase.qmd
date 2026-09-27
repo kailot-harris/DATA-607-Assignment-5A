@@ -45,7 +45,7 @@ head(df_long)
 
 ### Summarizing Data
 
-To prepare the data for summarizing, the data frame was pivoted wider. This replaced the
+To prepare the data for summarizing, the data frame was pivoted wider. This replaced the frequency column with two columns per unique combination of `airline` & `destination`: `on_time` and `delayed`. From there a new column, `on_time_pct`, was mutated in to calculate the percent of on-time flights for each unique combination of `airline` & `destination` . The data frame was then pivoted even wider, generating unique columns for `alaska` and `am west` airlines with their respective `on_time_pct` calculations.
 
 ```{r data-summary}
 
@@ -53,7 +53,6 @@ df_long <- df_long |>
   group_by(status) |>
   arrange(destination)
 
-  
 df_wide <- df_long |>
   pivot_wider(
     names_from = status,
@@ -79,15 +78,33 @@ knitr::kable(df_wider, caption = "Summary of Data")
 
 ## Visualizing Data
 
-```{r viz-1}
-df_wider |>
-  ggplot(aes(x=destination, y=alaska)) +
-  geom_col() +
-  scale_y_continuous(limits = c(0,100)) +
-  labs(x="Destination",
-       y="Percent On Time") +
-  theme_minimal()
+A column plot compares the `on_time_pct` values for each
 
+```{r viz-1}
+library(patchwork)
+df_summary |>
+  ggplot(aes(x=destination, y=on_time_pct, fill=destination)) +
+  facet_wrap(~airline) +
+  geom_col(show.legend = FALSE) +
+  scale_y_continuous(limits = c(0,100)) +
+  labs(title = "Comparing Arrival Delays Across Airline and Destination",
+       x="Destination",
+       y="Percent On Time") +
+  theme_minimal() +
+  theme(
+    plot.title.position = "plot",
+    plot.caption.position = "plot",
+    plot.title = element_text(size = 15, face = "bold"),
+    plot.subtitle = element_text(size = 13, face = "italic"),
+    axis.text.y = element_text(size = 11, face = "bold"),
+    axis.text.x = element_text(size = 11, face = "bold", angle = 45, hjust = 0.8, vjust = 1.1),
+    axis.title.y = element_text(size = 12, face = "bold"),
+    axis.title.x = element_text(size = 12, face = "bold"),
+  ) +
+  scale_fill_discrete()
+```
+
+```{r viz-2}
 
 
 ```
