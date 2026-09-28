@@ -1,7 +1,7 @@
 ---
 title: "DATA 607 - Assignment 5A - Codebase"
 author: "Kailot C. Harris"
-date: "2026/09/25"
+date: "2026/09/27"
 format:
   html:
     code-overflow: wrap
@@ -15,11 +15,13 @@ theme:
 
 Data is provided in the form of a formatted table with frequencies of on-time and delayed arrivals. An initial goal of this work is to accurately store this information in a .CSV file. Next, the .CSV file will be read into R using the `readr` package's `read_csv()` function. The `tidyr` and `dplyr` packages will be utilized to tidy and transform data. Arrival delay information will be compared across airlines and visualized.
 
+Anticipated challenges in this assignment include working with missing data, tidying and transforming the data frame appropriately, and drawing comparisons between airlines and destinations. This work will endeavor to answer whether the on-time-rate winner changes between a city-by-city comparison and an overall comparison.
+
 # Codebase
 
 ## Data Import
 
-Data is fetched from a github-hosted .CSV file containing the relevant data. The first step is to impute missing airline data using the `fill()` function from within the `tidyverse` .
+Data is fetched from a github-hosted .CSV file containing the relevant data. Next, missing airline data is imputed using the `fill()` function from within the `tidyverse`.
 
 ```{r read-csv}
 #| echo: true
@@ -52,7 +54,7 @@ An initial step in data tidying is pivoting the data frame longer because import
 
 df_long <- clean_data |>
   pivot_longer(
-    cols = "Los Angeles": "Seattle",
+    cols = !c(airline, status),
     names_to = "destination",
     values_to = "frequency"
   )
@@ -67,16 +69,13 @@ To prepare the data for summarizing, the data frame was pivoted wider. This repl
 #| warning: false
 #| message: false
 
-df_long <- df_long |>
-  arrange(destination)
-
 df_wide <- df_long |>
   pivot_wider(
     names_from = status,
     values_from = frequency
   ) |>
   janitor::clean_names()
-  
+
 df_summary <- df_wide |>
   mutate(on_time_pct = round(100*on_time/(on_time+delayed),1)) |>
   select(airline, destination, on_time_pct)
@@ -101,6 +100,20 @@ knitr::kable(df_wider, caption = "Summary of Data")
 #| label: fig-1
 #| fig-cap: "Comparing Arrival Delays Across Airline and Destination"
 
+theme_standard <- function(){
+  theme_minimal() +
+    theme(
+      plot.title.position = "plot",
+      plot.caption.position = "plot",
+      plot.title = element_text(size = 15, face = "bold"),
+      plot.subtitle = element_text(size = 13, face = "italic"),
+      axis.text.y = element_text(size = 11, face = "bold"),
+      axis.text.x = element_text(size = 11, face = "bold"),
+      axis.title.y = element_text(size = 12, face = "bold"),
+      axis.title.x = element_text(size = 12, face = "bold")
+    )
+}
+
 df_summary |>
   ggplot(aes(x=destination, y=on_time_pct, fill=destination)) +
   facet_wrap(~airline) +
@@ -110,18 +123,7 @@ df_summary |>
   labs(title = "Comparing Arrival Delays Across Airline and Destination",
        x="Destination",
        y="Percent On Time") +
-  theme_minimal() +
-  theme(
-    plot.title.position = "plot",
-    plot.caption.position = "plot",
-    plot.title = element_text(size = 15, face = "bold"),
-    plot.subtitle = element_text(size = 13, face = "italic"),
-    axis.text.y = element_text(size = 11, face = "bold"),
-    axis.text.x = element_text(size = 11, face = "bold", angle = 45, hjust = 0.8, vjust = 1.1),
-    axis.title.y = element_text(size = 12, face = "bold"),
-    axis.title.x = element_text(size = 12, face = "bold"),
-  ) +
-  scale_fill_discrete()
+  theme_standard()
 ```
 
 ```{r viz-2}
@@ -143,18 +145,8 @@ df_viz |>
        x = "Destination",
        y = "Differential in Percent On-Time\n (Alaska minus Am West)"
        ) +
-  theme_minimal() +
-  theme(
-    plot.title.position = "plot",
-    plot.caption.position = "plot",
-    plot.title = element_text(size = 15, face = "bold"),
-    plot.subtitle = element_text(size = 13, face = "italic"),
-    axis.text.y = element_text(size = 11, face = "bold"),
-    axis.text.x = element_text(size = 11, face = "bold"),
-    axis.title.y = element_text(size = 12, face = "bold"),
-    axis.title.x = element_text(size = 12, face = "bold"),
-  ) +
-  scale_fill_discrete()
+  coord_flip() +
+  theme_standard()
 ```
 
 To view the aggregate level summaries, the `df_wide` data frame is reused and summary statistics are summarized into the new frame, `df_sum`. From there, the percent of on time flights for each airline, aggregated across destinations, is computed.
