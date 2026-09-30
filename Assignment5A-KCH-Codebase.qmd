@@ -98,7 +98,7 @@ knitr::kable(df_wider, caption = "Summary of Data")
 #| warning: false
 #| message: false
 #| label: fig-1
-#| fig-cap: "Comparing Arrival Delays Across Airline and Destination"
+#| fig-cap: "Comparing On-Time Rates Across Airline and Destination"
 
 theme_standard <- function(){
   theme_minimal() +
@@ -120,7 +120,7 @@ df_summary |>
   geom_col(show.legend = FALSE) +
   coord_flip() +
   scale_y_continuous(limits = c(0,100)) +
-  labs(title = "Comparing Arrival Delays Across Airline and Destination",
+  labs(title = "Comparing On-Time Rates Across Airline and Destination",
        x="Destination",
        y="Percent On Time") +
   theme_standard()
