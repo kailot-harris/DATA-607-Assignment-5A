@@ -172,22 +172,22 @@ df_summary |>
   theme_standard()
 ```
 
-Next, the differentials in arrival delays between Alaska airline and Am West airline are visualized for each of the five destinations.
+Next, the differentials in arrival delays between Alaska airline and AM West airline are visualized for each of the five destinations.
 
 ```{r}
 #| echo: true
 #| warning: false
 #| message: false
 #| label: fig-2
-#| fig-cap: "Alaska Airlines Displays a Higher On-Time Percentage than Am West"
+#| fig-cap: "Alaska Airlines Displays a Higher On-Time Percentage than AM West"
 
 df_viz |>
   ggplot(aes(x=destination, y=diff, fill=destination)) +
   geom_col(show.legend = FALSE) +
-  labs(title = "Alaska Airlines Displays a Higher On-Time Percentage than Am West",
+  labs(title = "Alaska Airlines Displays a Higher On-Time Percentage than AM West",
        subtitle = "when data is stratified by destination",
        x = "Destination",
-       y = "Differential in Percent On-Time\n (Alaska minus Am West)"
+       y = "Differential in Percent On-Time\n (Alaska minus AM West)"
        ) +
   coord_flip() +
   theme_standard()
@@ -234,12 +234,14 @@ knitr::kable(df_sum)
 
 # Findings and Recommendations
 
-In this assignment a .CSV file was loaded into a data frame using `read_csv()` and the data frame was tidied and reorganized in several iterations. The frame was transformed wider and longer from its initial shape. In the end, the data is described in two visualizations comparing on-time rates (percentage) for five destinations across two airlines and the difference in on-time rates for the two airlines.
+In this assignment a .CSV file was loaded into a data frame using `read_csv()` and the data frame was tidied and reorganized in several iterations. The frame was transformed wider and longer from its initial shape. In the end, the data is described in three visualizations showing on-time rates (percentage) for five destinations across two airlines, the difference in on-time rates for the two airlines (stratified by destination), and a comparison of the aggregate data to the stratified data.
 
-According to @fig-1, each airline shows on-time rates exceeding 70%, with data from all of the Alaska airline destinations exceeding 80%. Flights to Phoenix represented the highest on-time rates for both airlines, while San Francisco represented the destination with the lowest on-time rates.
+According to @fig-1, both airlines show on-time rates exceeding 70%, with data from all of the Alaska airline destinations exceeding 80%. Flights to Phoenix represented the highest on-time rates for both airlines (\>92%), while San Francisco represented the destination with the lowest on-time rates (\<84%).
 
-In @fig-2, it is clear that Alaska airline has higher on-time percent rates than Am West airline, when the data is stratified by destination. Here, the differential for each destination (calculated as Alaska on-time rate minus Am West on-time rate) is shown, which compares the on-time rates for the airlines across all five destinations. This chart makes apparent that the largest differential in on-time rates occurs when San Francisco is the destination.
+When the data is stratified by destination, as in @fig-2, Alaska airline has higher on-time percentage rates than AM West airline. Here, the differential for each destination (calculated as Alaska on-time rate minus AM West on-time rate) is shown, which compares the on-time rates for the airlines across all five destinations. This chart makes apparent that the largest differential in on-time rates occurs when San Francisco is the destination (+11.8%).
 
-Finally, a comparison of the two airlines on aggregate statistics is presented in @tbl-4. This table exposes a discrepancy in the data: in @fig-1 and @fig-2 it was clear that Alaska airline outperformed Am West airline when results were dis-aggregated by destination; however, in @tbl-4, it is shown that Am West outperforms Alaska airline in on-time rates in aggregate. This situation is an example of Simpson's paradox: the trend observed in the stratified data is no longer apparent in the aggregated data. This is likely due to the extreme number of on-time Am West flights to Phoenix: 4840. This likely skewed the aggregate data to show a high percentage of on-time flights for Am West.
+Despite Alaska leading across all five destinations, @tbl-4 reveals an apparent contradiction: AM West achieves a higher aggregate on-time rate (89.1%) than Alaska airline (86.7%). In @fig-1 and @fig-2, Alaska airline outperformed AM West airline when results were stratified by destination; however, in @tbl-4, it is shown that AM West outperforms Alaska airline in on-time rates in aggregate. This situation is an example of Simpson's paradox: the trend observed in the stratified data is no longer apparent in the aggregated data. This is likely due to the extreme number of on-time AM West flights to Phoenix: 4840. This likely skewed the aggregate data to show a high percentage of on-time flights for AM West.
 
-Overall, this assignment could be extended by incorporating more data into the analysis (more airlines, more destinations, average delay times, etc.). Additionally, if historical data were available, the on-time rates for each airline could be calculated for each year or month of operation. Lastly, this assignment could be completed using a mySQL database for storage and then SQL manipulations could be practiced.
+To better visualize Simpson's paradox, @fig-3 compares the aggregate data (above the horizontal line) to the stratified data (below the horizontal line). Across each destination, Alaska's on time rate is greater than AM West's; however, when aggregated together, AM West has a greater overall on-time rate.
+
+Overall, this assignment could be extended by incorporating more data into the analysis (more airlines, more destinations, average delay times, etc.). Additionally, if historical data were available, the on-time rates for each airline could be calculated for each year or month of operation. Lastly, this assignment could be completed using a MySQL database for storage and then SQL manipulations could be practiced.
