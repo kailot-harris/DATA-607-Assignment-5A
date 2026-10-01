@@ -93,12 +93,11 @@ knitr::kable(df_wider, caption = "Summary of Data")
 
 ## Visualizing Data
 
-```{r viz-1}
-#| echo: true
+```{r viz-setup}
+#| echo: false
 #| warning: false
 #| message: false
-#| label: fig-1
-#| fig-cap: "Comparing On-Time Rates Across Airline and Destination"
+
 
 theme_standard <- function(){
   theme_minimal() +
@@ -113,50 +112,14 @@ theme_standard <- function(){
       axis.title.x = element_text(size = 12, face = "bold")
     )
 }
-
-df_summary |>
-  ggplot(aes(x=destination, y=on_time_pct, fill=destination)) +
-  facet_wrap(~airline) +
-  geom_col(show.legend = FALSE) +
-  coord_flip() +
-  scale_y_continuous(limits = c(0,100)) +
-  labs(title = "Comparing On-Time Rates Across Airline and Destination",
-       x="Destination",
-       y="Percent On Time") +
-  theme_standard()
 ```
 
-```{r viz-2}
+To view the aggregate level summaries, the `df_wide` data frame is reused and summary statistics are summarized into the new frame, `df_sum`. From there, the percent of on time flights for each airline, aggregated across destinations, is computed. Next, a combined data-frame containing both stratified and aggregated data is formed via `bind_rows()`. The destination column is then factorized and the order of elements for the upcoming plot is rearranged. Lastly, a differential calculation is performed comparing the stratified results for the two airlines.
+
+```{r df-transform}
 #| echo: true
 #| warning: false
 #| message: false
-#| label: fig-2
-#| fig-cap: "Alaska Airlines Displays a Higher On-Time Percentage than Am West"
-
-df_viz <- df_wider |>
-  mutate(diff = alaska - am_west) |>
-  select(destination, diff)
-
-df_viz |>
-  ggplot(aes(x=destination, y=diff, fill=destination)) +
-  geom_col(show.legend = FALSE) +
-  labs(title = "Alaska Airlines Displays a Higher On-Time Percentage than Am West",
-       subtitle = "",
-       x = "Destination",
-       y = "Differential in Percent On-Time\n (Alaska minus Am West)"
-       ) +
-  coord_flip() +
-  theme_standard()
-```
-
-To view the aggregate level summaries, the `df_wide` data frame is reused and summary statistics are summarized into the new frame, `df_sum`. From there, the percent of on time flights for each airline, aggregated across destinations, is computed.
-
-```{r summary-2}
-#| echo: true
-#| warning: false
-#| message: false
-#| label: tbl-3
-#| tbl-cap: "Aggregate Summary"
 
 df_sum <- df_wide |>
   group_by(airline) |>
@@ -167,8 +130,106 @@ df_sum <- df_wide |>
   ) |>
   select(airline, pct_on_time)
 
-knitr::kable(df_sum)
 
+
+df_combined <- bind_rows(df_summary |>
+                           mutate(destination = str_to_title(destination)), 
+                         df_sum |>
+                           rename(on_time_pct = pct_on_time) |>
+     
+                      mutate(destination = "Overall (Aggregate)")) 
+
+df_combined <- df_combined |>
+  mutate(airline = str_to_title(airline),
+         destination = factor(destination, levels = c("San Francisco", "Seattle", "Los Angeles", "San Diego", "Phoenix", "Overall (Aggregate)"))) 
+
+df_viz <- df_wider |>
+  mutate(diff = alaska - am_west) |>
+  mutate(destination = factor(destination, levels = c("San Francisco", "Seattle",  "San Diego", "Los Angeles", "Phoenix", "Overall (Aggregate)"))) |> 
+  select(destination, diff)
+```
+
+First, the on-time rates for all airlines and destinations is visualized.
+
+```{r}
+#| echo: true
+#| warning: false
+#| message: false
+#| label: fig-1
+#| fig-cap: "Comparing On-Time Rates Across Airline and Destination"
+
+df_summary |>
+  ggplot(aes(x=destination, 
+             y=on_time_pct, 
+             fill=destination)) +
+  facet_wrap(~airline) +
+  geom_col(show.legend = FALSE) +
+  coord_flip() +
+  scale_y_continuous(limits = c(0,100)) +
+  labs(title = "Comparing On-Time Rates Across Airline and Destination",
+       x="Destination",
+       y="Percent On Time") +
+  theme_standard()
+```
+
+Next, the differentials in arrival delays between Alaska airline and Am West airline are visualized for each of the five destinations.
+
+```{r}
+#| echo: true
+#| warning: false
+#| message: false
+#| label: fig-2
+#| fig-cap: "Alaska Airlines Displays a Higher On-Time Percentage than Am West"
+
+df_viz |>
+  ggplot(aes(x=destination, y=diff, fill=destination)) +
+  geom_col(show.legend = FALSE) +
+  labs(title = "Alaska Airlines Displays a Higher On-Time Percentage than Am West",
+       subtitle = "when data is stratified by destination",
+       x = "Destination",
+       y = "Differential in Percent On-Time\n (Alaska minus Am West)"
+       ) +
+  coord_flip() +
+  theme_standard()
+```
+
+Lastly, the average on-time rates for the stratified data is compared to the aggregate data for each airline.
+
+```{r}
+#| echo: true
+#| warning: false
+#| message: false
+#| label: fig-3
+#| fig-cap: "Comparing Stratified to Aggregate Data"
+
+df_combined |> 
+  ggplot(aes(x=on_time_pct, 
+             y = destination, 
+             color = airline)) +
+  geom_line(aes(group = destination), color = "gray", linewidth = 1.2) +
+  geom_point(size =3) +
+  scale_x_continuous(limits = c(70,100)) +
+  labs(
+    title = "Comparing Stratified to Aggregate Data",
+    subtitle = "Visualizing Simpson's Paradox",
+    x = "On-Time Percentage",
+    y = NULL,
+    color = "Airline"
+  ) + 
+  geom_hline(yintercept = 5.5) +
+  theme_standard()
+  
+```
+
+```{r summary-2}
+#| echo: true
+#| warning: false
+#| message: false
+#| label: tbl-4
+#| tbl-cap: "Aggregate Summary"
+
+
+knitr::kable(df_sum)
 ```
 
 # Findings and Recommendations
@@ -179,6 +240,6 @@ According to @fig-1, each airline shows on-time rates exceeding 70%, with data f
 
 In @fig-2, it is clear that Alaska airline has higher on-time percent rates than Am West airline, when the data is stratified by destination. Here, the differential for each destination (calculated as Alaska on-time rate minus Am West on-time rate) is shown, which compares the on-time rates for the airlines across all five destinations. This chart makes apparent that the largest differential in on-time rates occurs when San Francisco is the destination.
 
-Finally, a comparison of the two airlines on aggregate statistics is presented in @tbl-3. This table exposes a discrepancy in the data: in @fig-1 and @fig-2 it was clear that Alaska airline outperformed Am West airline when results were dis-aggregated by destination; however, in @tbl-3, it is shown that Am West outperforms Alaska airline in on-time rates in aggregate. This situation is an example of Simpson's paradox: the trend observed in the stratified data is no longer apparent in the aggregated data. This is likely due to the extreme number of on-time Am West flights to Phoenix: 4840. This likely skewed the aggregate data to show a high percentage of on-time flights for Am West.
+Finally, a comparison of the two airlines on aggregate statistics is presented in @tbl-4. This table exposes a discrepancy in the data: in @fig-1 and @fig-2 it was clear that Alaska airline outperformed Am West airline when results were dis-aggregated by destination; however, in @tbl-4, it is shown that Am West outperforms Alaska airline in on-time rates in aggregate. This situation is an example of Simpson's paradox: the trend observed in the stratified data is no longer apparent in the aggregated data. This is likely due to the extreme number of on-time Am West flights to Phoenix: 4840. This likely skewed the aggregate data to show a high percentage of on-time flights for Am West.
 
 Overall, this assignment could be extended by incorporating more data into the analysis (more airlines, more destinations, average delay times, etc.). Additionally, if historical data were available, the on-time rates for each airline could be calculated for each year or month of operation. Lastly, this assignment could be completed using a mySQL database for storage and then SQL manipulations could be practiced.
