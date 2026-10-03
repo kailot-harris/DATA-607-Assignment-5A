@@ -141,7 +141,7 @@ df_combined <- bind_rows(df_summary |>
 
 df_combined <- df_combined |>
   mutate(airline = str_to_title(airline),
-         destination = factor(destination, levels = c("San Francisco", "Seattle", "Los Angeles", "San Diego", "Phoenix", "Overall (Aggregate)"))) 
+         destination = factor(destination, levels = c("San Francisco", "Seattle", "San Diego", "Los Angeles", "Phoenix", "Overall (Aggregate)"))) 
 
 df_viz <- df_wider |>
   mutate(diff = alaska - am_west) |>
