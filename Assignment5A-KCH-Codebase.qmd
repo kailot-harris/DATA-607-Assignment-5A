@@ -193,6 +193,19 @@ df_viz |>
   theme_standard()
 ```
 
+The aggregate data is summarized in a table.
+
+```{r}
+#| echo: true
+#| warning: false
+#| message: false
+#| label: tbl-4
+#| tbl-cap: "Aggregate Summary"
+
+
+knitr::kable(df_sum)
+```
+
 Lastly, the average on-time rates for the stratified data is compared to the aggregate data for each airline.
 
 ```{r}
@@ -221,17 +234,6 @@ df_combined |>
   
 ```
 
-```{r summary-2}
-#| echo: true
-#| warning: false
-#| message: false
-#| label: tbl-4
-#| tbl-cap: "Aggregate Summary"
-
-
-knitr::kable(df_sum)
-```
-
 # Findings and Recommendations
 
 In this assignment a .CSV file was loaded into a data frame using `read_csv()` and the data frame was tidied and reorganized in several iterations. The frame was transformed wider and longer from its initial shape. In the end, the data is described in three visualizations showing on-time rates (percentage) for five destinations across two airlines, the difference in on-time rates for the two airlines (stratified by destination), and a comparison of the aggregate data to the stratified data.
@@ -240,7 +242,7 @@ According to @fig-1, both airlines show on-time rates exceeding 70%, with data f
 
 When the data is stratified by destination, as in @fig-2, Alaska airline has higher on-time percentage rates than AM West airline. Here, the differential for each destination (calculated as Alaska on-time rate minus AM West on-time rate) is shown, which compares the on-time rates for the airlines across all five destinations. This chart makes apparent that the largest differential in on-time rates occurs when San Francisco is the destination (+11.8%).
 
-Despite Alaska leading across all five destinations, @tbl-4 reveals an apparent contradiction: AM West achieves a higher aggregate on-time rate (89.1%) than Alaska airline (86.7%). In @fig-1 and @fig-2, Alaska airline outperformed AM West airline when results were stratified by destination; however, in @tbl-4, it is shown that AM West outperforms Alaska airline in on-time rates in aggregate. This situation is an example of Simpson's paradox: the trend observed in the stratified data is no longer apparent in the aggregated data. This is likely due to the extreme number of on-time AM West flights to Phoenix: 4840. This likely skewed the aggregate data to show a high percentage of on-time flights for AM West.
+Despite Alaska leading across all five destinations, @tbl-4 reveals an apparent contradiction: AM West achieves a higher aggregate on-time rate (89.1%) than Alaska airline (86.7%). In @fig-1 and @fig-2, Alaska airline outperformed AM West airline when results were stratified by destination; however, in @tbl-4, it is shown that AM West outperforms Alaska airline in on-time rates in aggregate. This situation is an example of Simpson's paradox: the trend observed in the stratified data is no longer apparent in the aggregated data. This is likely due to the extreme number of on-time AM West flights to Phoenix: 4840. This skewed the aggregate data, which is a volume-weighted average, to show a high percentage of on-time flights for AM West. As Phoenix is the destination where each airline demonstrated their highest on-time rates, over-representing the AM West Phoenix route in the data set leads to the contradiction between aggregate rates and stratified rates.
 
 To better visualize Simpson's paradox, @fig-3 compares the aggregate data (above the horizontal line) to the stratified data (below the horizontal line). Across each destination, Alaska's on time rate is greater than AM West's; however, when aggregated together, AM West has a greater overall on-time rate.
 

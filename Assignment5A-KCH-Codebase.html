@@ -386,7 +386,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="visualizing-data" class="level2">
 <h2 class="anchored" data-anchor-id="visualizing-data">Visualizing Data</h2>
-<p>To view the aggregate level summaries, the <code>df_wide</code> data frame is reused and summary statistics are summarized into the new frame, <code>df_sum</code>. From there, the percent of on time flights for each airline, aggregated across destinations, is computed.</p>
+<p>To view the aggregate level summaries, the <code>df_wide</code> data frame is reused and summary statistics are summarized into the new frame, <code>df_sum</code>. From there, the percent of on time flights for each airline, aggregated across destinations, is computed. Next, a combined data-frame containing both stratified and aggregated data is formed via <code>bind_rows()</code>. The destination column is then factorized and the order of elements for the upcoming plot is rearranged. Lastly, a differential calculation is performed comparing the stratified results for the two airlines.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_sum <span class="ot">&lt;-</span> df_wide <span class="sc">|&gt;</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(airline) <span class="sc">|&gt;</span></span>
@@ -412,8 +412,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>df_viz <span class="ot">&lt;-</span> df_wider <span class="sc">|&gt;</span></span>
 <span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">diff =</span> alaska <span class="sc">-</span> am_west) <span class="sc">|&gt;</span></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(destination, diff)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">destination =</span> <span class="fu">factor</span>(destination, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"San Francisco"</span>, <span class="st">"Seattle"</span>,  <span class="st">"San Diego"</span>, <span class="st">"Los Angeles"</span>, <span class="st">"Phoenix"</span>, <span class="st">"Overall (Aggregate)"</span>))) <span class="sc">|&gt;</span> </span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(destination, diff)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<p>First, the on-time rates for all airlines and destinations is visualized.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_summary <span class="sc">|&gt;</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>destination, </span>
@@ -440,14 +442,15 @@ Figure&nbsp;1: Comparing On-Time Rates Across Airline and Destination
 </div>
 </div>
 </div>
+<p>Next, the differentials in arrival delays between Alaska airline and AM West airline are visualized for each of the five destinations.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df_viz <span class="sc">|&gt;</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>destination, <span class="at">y=</span>diff, <span class="at">fill=</span>destination)) <span class="sc">+</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Alaska Airlines Displays a Higher On-Time Percentage than Am West"</span>,</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">""</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Alaska Airlines Displays a Higher On-Time Percentage than AM West"</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"when data is stratified by destination"</span>,</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Destination"</span>,</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Differential in Percent On-Time</span><span class="sc">\n</span><span class="st"> (Alaska minus Am West)"</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Differential in Percent On-Time</span><span class="sc">\n</span><span class="st"> (Alaska minus AM West)"</span></span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>       ) <span class="sc">+</span></span>
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_standard</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -458,44 +461,15 @@ Figure&nbsp;1: Comparing On-Time Rates Across Airline and Destination
 <img src="Assignment5A-KCH-Codebase_files/figure-html/fig-2-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: Alaska Airlines Displays a Higher On-Time Percentage than Am West
+Figure&nbsp;2: Alaska Airlines Displays a Higher On-Time Percentage than AM West
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
+<p>The aggregate data is summarized in a table.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df_combined <span class="sc">|&gt;</span> </span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>on_time_pct, </span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">y =</span> destination, </span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> airline)) <span class="sc">+</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">group =</span> destination), <span class="at">color =</span> <span class="st">"gray"</span>, <span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span><span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">70</span>,<span class="dv">100</span>)) <span class="sc">+</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Comparing Stratified to Aggregate Data"</span>,</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Visualizing Simpson's Paradox"</span>,</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"On-Time Percentage"</span>,</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="cn">NULL</span>,</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Airline"</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_standard</span>() <span class="sc">+</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">5.5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div id="fig-3" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="Assignment5A-KCH-Codebase_files/figure-html/fig-3-1.png" class="img-fluid figure-img" width="672">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: Comparing Stratified to Aggregate Data
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(df_sum)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(df_sum)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="tbl-4" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -526,15 +500,47 @@ Table&nbsp;1: Aggregate Summary
 </figure>
 </div>
 </div>
+<p>Lastly, the average on-time rates for the stratified data is compared to the aggregate data for each airline.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df_combined <span class="sc">|&gt;</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>on_time_pct, </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">y =</span> destination, </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> airline)) <span class="sc">+</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">group =</span> destination), <span class="at">color =</span> <span class="st">"gray"</span>, <span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">70</span>,<span class="dv">100</span>)) <span class="sc">+</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Comparing Stratified to Aggregate Data"</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Visualizing Simpson's Paradox"</span>,</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"On-Time Percentage"</span>,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="cn">NULL</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Airline"</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span> </span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">5.5</span>) <span class="sc">+</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_standard</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-3" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="Assignment5A-KCH-Codebase_files/figure-html/fig-3-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Comparing Stratified to Aggregate Data
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
 </section>
 </section>
 <section id="findings-and-recommendations" class="level1">
 <h1>Findings and Recommendations</h1>
-<p>In this assignment a .CSV file was loaded into a data frame using <code>read_csv()</code> and the data frame was tidied and reorganized in several iterations. The frame was transformed wider and longer from its initial shape. In the end, the data is described in two visualizations comparing on-time rates (percentage) for five destinations across two airlines and the difference in on-time rates for the two airlines.</p>
-<p>According to <a href="#fig-1" class="quarto-xref">Figure&nbsp;1</a>, each airline shows on-time rates exceeding 70%, with data from all of the Alaska airline destinations exceeding 80%. Flights to Phoenix represented the highest on-time rates for both airlines, while San Francisco represented the destination with the lowest on-time rates.</p>
-<p>In <a href="#fig-2" class="quarto-xref">Figure&nbsp;2</a>, it is clear that Alaska airline has higher on-time percent rates than Am West airline, when the data is stratified by destination. Here, the differential for each destination (calculated as Alaska on-time rate minus Am West on-time rate) is shown, which compares the on-time rates for the airlines across all five destinations. This chart makes apparent that the largest differential in on-time rates occurs when San Francisco is the destination.</p>
-<p>Finally, a comparison of the two airlines on aggregate statistics is presented in <a href="#tbl-4" class="quarto-xref">Table&nbsp;1</a>. This table exposes a discrepancy in the data: in <a href="#fig-1" class="quarto-xref">Figure&nbsp;1</a> and <a href="#fig-2" class="quarto-xref">Figure&nbsp;2</a> it was clear that Alaska airline outperformed Am West airline when results were dis-aggregated by destination; however, in <a href="#tbl-4" class="quarto-xref">Table&nbsp;1</a>, it is shown that Am West outperforms Alaska airline in on-time rates in aggregate. This situation is an example of Simpson’s paradox: the trend observed in the stratified data is no longer apparent in the aggregated data. This is likely due to the extreme number of on-time Am West flights to Phoenix: 4840. This likely skewed the aggregate data to show a high percentage of on-time flights for Am West.</p>
-<p>Overall, this assignment could be extended by incorporating more data into the analysis (more airlines, more destinations, average delay times, etc.). Additionally, if historical data were available, the on-time rates for each airline could be calculated for each year or month of operation. Lastly, this assignment could be completed using a mySQL database for storage and then SQL manipulations could be practiced.</p>
+<p>In this assignment a .CSV file was loaded into a data frame using <code>read_csv()</code> and the data frame was tidied and reorganized in several iterations. The frame was transformed wider and longer from its initial shape. In the end, the data is described in three visualizations showing on-time rates (percentage) for five destinations across two airlines, the difference in on-time rates for the two airlines (stratified by destination), and a comparison of the aggregate data to the stratified data.</p>
+<p>According to <a href="#fig-1" class="quarto-xref">Figure&nbsp;1</a>, both airlines show on-time rates exceeding 70%, with data from all of the Alaska airline destinations exceeding 80%. Flights to Phoenix represented the highest on-time rates for both airlines (&gt;92%), while San Francisco represented the destination with the lowest on-time rates (&lt;84%).</p>
+<p>When the data is stratified by destination, as in <a href="#fig-2" class="quarto-xref">Figure&nbsp;2</a>, Alaska airline has higher on-time percentage rates than AM West airline. Here, the differential for each destination (calculated as Alaska on-time rate minus AM West on-time rate) is shown, which compares the on-time rates for the airlines across all five destinations. This chart makes apparent that the largest differential in on-time rates occurs when San Francisco is the destination (+11.8%).</p>
+<p>Despite Alaska leading across all five destinations, <a href="#tbl-4" class="quarto-xref">Table&nbsp;1</a> reveals an apparent contradiction: AM West achieves a higher aggregate on-time rate (89.1%) than Alaska airline (86.7%). In <a href="#fig-1" class="quarto-xref">Figure&nbsp;1</a> and <a href="#fig-2" class="quarto-xref">Figure&nbsp;2</a>, Alaska airline outperformed AM West airline when results were stratified by destination; however, in <a href="#tbl-4" class="quarto-xref">Table&nbsp;1</a>, it is shown that AM West outperforms Alaska airline in on-time rates in aggregate. This situation is an example of Simpson’s paradox: the trend observed in the stratified data is no longer apparent in the aggregated data. This is likely due to the extreme number of on-time AM West flights to Phoenix: 4840. This skewed the aggregate data, which is a volume-weighted average, to show a high percentage of on-time flights for AM West. As Phoenix is the destination where each airline demonstrated their highest on-time rates, over-representing the AM West Phoenix route in the data set leads to the contradiction between aggregate rates and stratified rates.</p>
+<p>To better visualize Simpson’s paradox, <a href="#fig-3" class="quarto-xref">Figure&nbsp;3</a> compares the aggregate data (above the horizontal line) to the stratified data (below the horizontal line). Across each destination, Alaska’s on time rate is greater than AM West’s; however, when aggregated together, AM West has a greater overall on-time rate.</p>
+<p>Overall, this assignment could be extended by incorporating more data into the analysis (more airlines, more destinations, average delay times, etc.). Additionally, if historical data were available, the on-time rates for each airline could be calculated for each year or month of operation. Lastly, this assignment could be completed using a MySQL database for storage and then SQL manipulations could be practiced.</p>
 </section>
 
 </main>
